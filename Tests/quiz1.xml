@@ -2,7 +2,7 @@
 <quiz>
 	<question category="tf">
 		<text>The sky is blue.</text>
-		<answer>T</answer>
+		<answer>True</answer>
 	</question>
 	<question category="mc">
 		<text>What is my dog's name?</text>
