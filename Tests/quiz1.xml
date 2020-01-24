@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+	<question category="tf">
+		<text>The sky is blue.</text>
+		<answer>T</answer>
+	</question>
+	<question category="mc">
+		<text>What is my dog's name?</text>
+		<option>Carmello</option>
+		<option>Blue Boy</option>
+		<option>Strawbert</option>
+		<option>Remmy</option>
+		<answer>Carmello</answer>
+	</question>
+	<question category="blank">
+		<text>The capital of Denmark is...</text>
+		<value>3</value>
+		<answer>Copenhagen</answer>
+	</question>
+	<question category="matching">
+		<text>Match the following animals to the noise they make</text>
+		<option>Woof</option>
+		<answer>Dog</answer>
+		<option>Meow</option>
+		<answer>Cat</answer>
+		<option>Quack</option>
+		<answer>Duck</answer>
+		<option>Ribbit</option>
+		<answer>Frog</answer>		
+	</question>
+</quiz>
+
+
+
