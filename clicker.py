@@ -9,7 +9,7 @@ class TF:
     def ask(self):
         print("True or False?")
         val=input(self.text)
-        if(val==self.answer):
+        if(val.lower()==self.answer.lower()):
             print("Correct!")
         else:
             print("Incorrect!")
@@ -20,10 +20,13 @@ class MC:
     value=1
     def ask(self):
         print("Multiple Choice! Type the correct answer")
-        print(self.text)
         for i in self.option:
            print(i)
-        
+        val=input(self.text)
+        if(val.lower()==self.answer.lower()):
+            print("Correct!")
+        else:
+            print("Incorrect!")
         
 class Blank:
     text=""
@@ -56,7 +59,7 @@ def parseQuiz(tree):
                 elif(child.tag=="answer"):
                     newQuestion.answer=child.text
             questions.put(newQuestion)           
-        elif(question.attrib['category']=="mc"):#MULTIPLE CHOICE//Not working yet, check
+        elif(question.attrib['category']=="mc"):#MULTIPLE CHOICE
             newQuestion=MC()
             i=0
             for child in question:
