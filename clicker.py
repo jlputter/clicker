@@ -45,17 +45,26 @@ class Blank:
 class Matching:
     text=""
     pair={}
+    option=[]
     answer=[]
     value=1
     def ask(self):
         print("Matching!")
         print(self.text)
-        for idx, i in enumerate(self.pair):
+        for idx, i in enumerate(self.option):
             print("%d. %s"%(idx+1,i))
-        for i in self.answer:##Change this to print randomly
-            print(i)
-        for i in self.answer:##also print randomly
-            print({i})
+        print("Your options are:")
+        for i in range(0, len(self.answer)):
+            print(self.answer.pop(random.randrange(len(self.answer))))
+        print()
+        for i in range(0, len(self.option)):
+            rand=self.option.pop(random.randrange(len(self.option)))
+            val=input("%s matches with "% rand)
+            if(val.lower()==self.pair.get(rand).lower()):
+                print("Correct!")
+            else:
+                print("Incorrect!")            
+        print()
             
 def XMLToTree(xmlfile):
     tree = ET.parse(xmlfile)
@@ -96,6 +105,7 @@ def parseQuiz(tree):
         elif(question.attrib['category']=="matching"):#MATCHING
             newQuestion=Matching()
             i=0
+            j=0
             for child in question: 
                 if(child.tag=="text"):
                     newQuestion.text=child.text
@@ -105,6 +115,8 @@ def parseQuiz(tree):
                     for match in child:
                         if(match.tag=="option"):
                             tempOption=match.text
+                            newQuestion.option.insert(j, tempOption)
+                            ++j
                         elif(match.tag=="answer"):
                             tempAnswer=match.text
                             newQuestion.answer.insert(i, tempAnswer)
@@ -114,7 +126,6 @@ def parseQuiz(tree):
         else:
             print("Question type not found")
             sys.exit()
-
     return questions
 
 def main():
