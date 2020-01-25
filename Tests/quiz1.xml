@@ -19,16 +19,9 @@
 	</question>
 	<question category="matching">
 		<text>Match the following animals to the noise they make</text>
-		<option>Woof</option>
-		<answer>Dog</answer>
-		<option>Meow</option>
-		<answer>Cat</answer>
-		<option>Quack</option>
-		<answer>Duck</answer>
-		<option>Ribbit</option>
-		<answer>Frog</answer>		
+		<pair><option>Woof</option><answer>Dog</answer></pair>
+		<pair><option>Meow</option><answer>Cat</answer></pair>
+		<pair><option>Quack</option><answer>Duck</answer></pair>
+		<pair><option>Ribbit</option><answer>Frog</answer></pair>
 	</question>
 </quiz>
-
-
-
