@@ -1,18 +1,20 @@
 import xml.etree.ElementTree as ET
 import sys
 import queue
+import random
 
 class TF:
     text=""
     answer=""
     value=1
     def ask(self):
-        print("True or False?")
+        print("True or False!")
         val=input(self.text)
         if(val.lower()==self.answer.lower()):
-            print("Correct!")
+            print("Correct!\n")
         else:
-            print("Incorrect!")
+            print("Incorrect!\n")
+            
 class MC:
     text=""
     option=[]
@@ -20,29 +22,41 @@ class MC:
     value=1
     def ask(self):
         print("Multiple Choice! Type the correct answer")
-        for i in self.option:
-           print(i)
+        for idx, i in enumerate(self.option):
+           print("%d. %s"%(idx+1,i))
         val=input(self.text)
         if(val.lower()==self.answer.lower()):
-            print("Correct!")
+            print("Correct!\n")
         else:
-            print("Incorrect!")
-        
+            print("Incorrect!\n")
+            
 class Blank:
     text=""
     answer=""
     value=1
     def ask(self):
-        print("Fill in the blank")
-        
+        print("Fill in the blank!")
+        val=input(self.text)
+        if(val.lower()==self.answer.lower()):
+            print("Correct!\n")
+        else:
+            print("Incorrect!\n")
+            
 class Matching:
     text=""
-    option=[]
-    answer={}
+    pair={}
+    answer=[]
     value=1
     def ask(self):
-        print("Matching")
-
+        print("Matching!")
+        print(self.text)
+        for idx, i in enumerate(self.pair):
+            print("%d. %s"%(idx+1,i))
+        for i in self.answer:##Change this to print randomly
+            print(i)
+        for i in self.answer:##also print randomly
+            print({i})
+            
 def XMLToTree(xmlfile):
     tree = ET.parse(xmlfile)
     return tree
@@ -71,15 +85,31 @@ def parseQuiz(tree):
                     newQuestion.option.insert(i, child.text)
                     ++i
             questions.put(newQuestion)
-        elif(question.attrib['category']=="blank"):#BLANK
+        elif(question.attrib['category']=="blank"):#BLANK 
             newQuestion=Blank()
-            for child in question: 
-                print("blank")
+            for child in question:
+                if(child.tag=="text"):
+                    newQuestion.text=child.text
+                elif(child.tag=="answer"):
+                    newQuestion.answer=child.text
             questions.put(newQuestion)
         elif(question.attrib['category']=="matching"):#MATCHING
             newQuestion=Matching()
+            i=0
             for child in question: 
-                print("matching")
+                if(child.tag=="text"):
+                    newQuestion.text=child.text
+                elif(child.tag=="pair"):
+                    tempOption=""
+                    tempAnswer=""
+                    for match in child:
+                        if(match.tag=="option"):
+                            tempOption=match.text
+                        elif(match.tag=="answer"):
+                            tempAnswer=match.text
+                            newQuestion.answer.insert(i, tempAnswer)
+                            ++i
+                    newQuestion.pair[tempOption]=tempAnswer
             questions.put(newQuestion)
         else:
             print("Question type not found")
@@ -94,13 +124,3 @@ def main():
         questions.get().ask()
 
 main()
-
-#TODO, get it to work
-#I think True False is working, rest are not finished yet
-#unhardcode the xml file reference
-#add failure handling in case of file/question type not found
-
-#item.attrib gets you {'category': 'tf'}
-#child.tag gets you text, answer, option
-#child.text gets The sky is blue, Carmello
-
