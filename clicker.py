@@ -14,13 +14,12 @@ class TF:
     value=1
     def ask(self):
         print("True or False!")
-        print("Point value: %d"%(self.value))
         val=input(self.text)
-        if(val.lower()==self.answer.lower()):
-            print("Correct!\n")
+        if(isTF(val)==self.answer.lower()):
+            correct()
             return self.value
         else:
-            print("Incorrect!\n")
+            incorrect()
             return 0
             
 class MC:
@@ -30,15 +29,14 @@ class MC:
     value=1
     def ask(self):
         print("Multiple Choice! Type the correct answer")
-        print("Point value: %d"%(self.value))
         for idx, i in enumerate(self.option):
            print("%d. %s"%(idx+1,i))
         val=input(self.text)
         if(val.lower()==self.answer.lower()):
-            print("Correct!\n")
+            correct()
             return self.value
         else:
-            print("Incorrect!\n")
+            incorrect()
             return 0
             
 class Blank:
@@ -47,13 +45,12 @@ class Blank:
     value=1
     def ask(self):
         print("Fill in the blank!")
-        print("Point value: %d"%(self.value))
         val=input(self.text)
         if(val.lower()==self.answer.lower()):
-            print("Correct!\n")
+            correct()
             return self.value
         else:
-            print("Incorrect!\n")
+            incorrect()
             return 0
             
 class Matching:
@@ -65,7 +62,6 @@ class Matching:
     def ask(self):
         isCorrect=True
         print("Matching!")
-        print("Point value: %d"%(self.value))
         print(self.text)
         for idx, i in enumerate(self.option):
             print("%d. %s"%(idx+1,i))
@@ -77,11 +73,10 @@ class Matching:
             rand=self.option.pop(random.randrange(len(self.option)))
             val=input("%s matches with "% rand)
             if(val.lower()==self.pair.get(rand).lower()):
-                print("Correct!")
+                correct()
             else:
-                print("Incorrect!")
+                incorrect()
                 isCorrect=False
-        print()
         if(isCorrect):
             return self.value
         else:
@@ -156,6 +151,27 @@ def parseQuiz(tree):
             print("Question type not found")
             sys.exit()
     return questions
+#change this to isCorrect
+
+def parseTF(question):
+    return
+def parseMC(question):
+    return
+def parseBlank(question):
+    return
+def parseMatching(question):
+    return
+
+def isTF(reponse):
+    if(reponse.lower()=="t") or (reponse.lower()=="true"):
+        return"true"
+    elif(reponse.lower()=="f") or (reponse.lower()=="false"):
+        return"false"
+    return"wrongo"
+def correct():
+    print("Correct!\n")
+def incorrect():
+    print("Incorrect!\n")
 
 def runQuiz(questions, player):
     for i in range(questions.qsize()):
@@ -167,5 +183,11 @@ def main():
     questions= parseQuiz(tree)
     p1=Player("Ryne")
     runQuiz(questions, p1)
+
+'''
+Match a number to a letter!
+1. Ribbit          A. Dog
+2. Oink            B. Bird
+'''
 
 main()
