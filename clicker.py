@@ -2,6 +2,8 @@ import xml.etree.ElementTree as ET
 import sys
 import queue
 import random
+questionCategories=["tf","mc","blank","matching"]
+
 
 class Player:
     def __init__(self, name):
@@ -21,7 +23,17 @@ class TF:
         else:
             incorrect()
             return 0
-            
+
+    def parse(self, question):
+        for child in question:
+            if(child.tag=="text"):
+                self.text=child.text
+            elif(child.tag=="answer"):
+                self.answer=child.text
+            elif(child.tag=="value"):
+                self.value=int(child.text)
+        return self
+
 class MC:
     text=""
     option=[]
@@ -38,6 +50,21 @@ class MC:
         else:
             incorrect()
             return 0
+        
+    def parse(self, question):
+        i=0
+        for child in question:
+            if(child.tag=="text"):
+                self.text=child.text
+            elif(child.tag=="answer"):
+                self.answer=child.text
+            elif(child.tag=="option"):
+                self.option.insert(i, child.text)
+                ++i
+            elif(child.tag=="value"):
+                self.value=int(child.text)
+        return self
+
             
 class Blank:
     text=""
@@ -52,6 +79,17 @@ class Blank:
         else:
             incorrect()
             return 0
+
+    def parse(self, question):
+        for child in question:
+            if(child.tag=="text"):
+                self.text=child.text
+            elif(child.tag=="answer"):
+                self.answer=child.text
+            elif(child.tag=="value"):
+                self.value=int(child.text)
+        return self
+
             
 class Matching:
     text=""
@@ -81,6 +119,29 @@ class Matching:
             return self.value
         else:
             return 0
+
+    def parse(self, question):
+        i=0
+        j=0
+        for child in question: 
+            if(child.tag=="text"):
+                self.text=child.text
+            elif(child.tag=="pair"):
+                tempOption=""
+                tempAnswer=""
+                for match in child:
+                    if(match.tag=="option"):
+                        tempOption=match.text
+                        self.option.insert(j, tempOption)
+                        ++j
+                    elif(match.tag=="answer"):
+                        tempAnswer=match.text
+                        self.answer.insert(i, tempAnswer)
+                        ++i
+                self.pair[tempOption]=tempAnswer
+            elif(child.tag=="value"):
+                self.value=int(child.text)
+        return self
        
 def XMLToTree(xmlfile):
     tree = ET.parse(xmlfile)
@@ -88,78 +149,28 @@ def XMLToTree(xmlfile):
 
 def parseQuiz(tree):
     root=tree.getroot()
-    questions= queue.Queue()
-    for question in root.findall('./question'):
-        if(question.attrib['category']=="tf"):#TRUE FALSE
-            questions.put(parseTF(question))           
-        elif(question.attrib['category']=="mc"):#MULTIPLE CHOICE
-            questions.put(parseMC(question))
-        elif(question.attrib['category']=="blank"):#BLANK 
-            questions.put(parseBlank(question))
-        elif(question.attrib['category']=="matching"):#MATCHING
-            questions.put(parseMatching(question))
+    allQuestions= queue.Queue()
+    for unparsedQuestion in root.findall('./question'):
+        if(unparsedQuestion.attrib['category']=="tf"):#TRUE FALSE
+            newQuestion=TF()
+            newQuestion.parse(unparsedQuestion)
+            allQuestions.put(newQuestion)          
+        elif(unparsedQuestion.attrib['category']=="mc"):#MULTIPLE CHOICE
+            newQuestion=MC()
+            newQuestion.parse(unparsedQuestion)
+            allQuestions.put(newQuestion)
+        elif(unparsedQuestion.attrib['category']=="blank"):#Fill In Blank
+            newQuestion=Blank()
+            newQuestion.parse(unparsedQuestion)
+            allQuestions.put(newQuestion)
+        elif(unparsedQuestion.attrib['category']=="matching"):#MATCHING
+            newQuestion=Matching()
+            newQuestion.parse(unparsedQuestion)
+            allQuestions.put(newQuestion)
         else:
             print("Question type not found")
             sys.exit()
-    return questions
-
-def parseTF(question):
-    newQuestion=TF()
-    for child in question:
-        if(child.tag=="text"):
-            newQuestion.text=child.text
-        elif(child.tag=="answer"):
-            newQuestion.answer=child.text
-        elif(child.tag=="value"):
-            newQuestion.value=int(child.text)
-    return newQuestion
-def parseMC(question):
-    newQuestion=MC()
-    i=0
-    for child in question:
-        if(child.tag=="text"):
-            newQuestion.text=child.text
-        elif(child.tag=="answer"):
-            newQuestion.answer=child.text
-        elif(child.tag=="option"):
-            newQuestion.option.insert(i, child.text)
-            ++i
-        elif(child.tag=="value"):
-            newQuestion.value=int(child.text)
-    return newQuestion
-def parseBlank(question):
-    newQuestion=Blank()
-    for child in question:
-        if(child.tag=="text"):
-            newQuestion.text=child.text
-        elif(child.tag=="answer"):
-            newQuestion.answer=child.text
-        elif(child.tag=="value"):
-            newQuestion.value=int(child.text)
-    return newQuestion
-def parseMatching(question):
-    newQuestion=Matching()
-    i=0
-    j=0
-    for child in question: 
-        if(child.tag=="text"):
-            newQuestion.text=child.text
-        elif(child.tag=="pair"):
-            tempOption=""
-            tempAnswer=""
-            for match in child:
-                if(match.tag=="option"):
-                    tempOption=match.text
-                    newQuestion.option.insert(j, tempOption)
-                    ++j
-                elif(match.tag=="answer"):
-                    tempAnswer=match.text
-                    newQuestion.answer.insert(i, tempAnswer)
-                    ++i
-            newQuestion.pair[tempOption]=tempAnswer
-        elif(child.tag=="value"):
-            newQuestion.value=int(child.text)
-    return newQuestion
+    return allQuestions
 
 def isTF(reponse):
     if(reponse.lower()=="t") or (reponse.lower()=="true"):
@@ -167,6 +178,7 @@ def isTF(reponse):
     elif(reponse.lower()=="f") or (reponse.lower()=="false"):
         return"false"
     return"wrongo"
+
 def correct():
     print("Correct!\n")
 def incorrect():
@@ -183,9 +195,4 @@ def main():
     p1=Player("Ryne")
     runQuiz(questions, p1)
 
-'''
-Match a number to a letter!
-1. Ribbit          A. Dog
-2. Oink            B. Bird
-'''
 main()
