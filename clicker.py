@@ -2,8 +2,6 @@ import xml.etree.ElementTree as ET
 import sys
 import queue
 import random
-questionCategories=["tf","mc","blank","matching"]
-
 
 class Player:
     def __init__(self, name):
@@ -64,7 +62,6 @@ class MC:
             elif(child.tag=="value"):
                 self.value=int(child.text)
         return self
-
             
 class Blank:
     text=""
@@ -89,7 +86,6 @@ class Blank:
             elif(child.tag=="value"):
                 self.value=int(child.text)
         return self
-
             
 class Matching:
     text=""
@@ -151,22 +147,10 @@ def parseQuiz(tree):
     root=tree.getroot()
     allQuestions= queue.Queue()
     for unparsedQuestion in root.findall('./question'):
-        if(unparsedQuestion.attrib['category']=="tf"):#TRUE FALSE
-            newQuestion=TF()
+        if unparsedQuestion.attrib['category'] in questionCategories: 
+            newQuestion = questionCategories.get(unparsedQuestion.attrib['category'])
             newQuestion.parse(unparsedQuestion)
-            allQuestions.put(newQuestion)          
-        elif(unparsedQuestion.attrib['category']=="mc"):#MULTIPLE CHOICE
-            newQuestion=MC()
-            newQuestion.parse(unparsedQuestion)
-            allQuestions.put(newQuestion)
-        elif(unparsedQuestion.attrib['category']=="blank"):#Fill In Blank
-            newQuestion=Blank()
-            newQuestion.parse(unparsedQuestion)
-            allQuestions.put(newQuestion)
-        elif(unparsedQuestion.attrib['category']=="matching"):#MATCHING
-            newQuestion=Matching()
-            newQuestion.parse(unparsedQuestion)
-            allQuestions.put(newQuestion)
+            allQuestions.put(newQuestion) 
         else:
             print("Question type not found")
             sys.exit()
@@ -183,11 +167,14 @@ def correct():
     print("Correct!\n")
 def incorrect():
     print("Incorrect!\n")
-
 def runQuiz(questions, player):
     for i in range(questions.qsize()):
         player.score+=questions.get().ask()
     print("%ss score=%d"% (player.name, player.score))
+
+
+
+questionCategories= {"tf":TF(), "mc":MC(), "blank":Blank(), "matching":Matching()}
 
 def main():
     tree=XMLToTree("./quiz1.xml")
